@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import AceEditor from "react-ace";
 import { Toaster, toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { generateColor } from "../../utils";
 import "./Room.css";
-
+import Feedback from "../../components/Feedback";
+import FeedbackDisplay from "../../components/FeedbackDisplay"; 
 
 import "ace-builds/src-noconflict/mode-javascript";
-
 import "ace-builds/src-noconflict/theme-dracula";
 import "ace-builds/src-noconflict/ext-language_tools";
 import "ace-builds/src-noconflict/ext-searchbox";
@@ -15,10 +15,17 @@ import "ace-builds/src-noconflict/ext-searchbox";
 export default function Room({ socket }) {
   const navigate = useNavigate();
   const { roomId } = useParams();
-  const [fetchedUsers, setFetchedUsers] = useState(() => []);
-  const [fetchedCode, setFetchedCode] = useState(() => "");
-  const [language, setLanguage] = useState(() => "javascript");
- 
+  const [fetchedUsers, setFetchedUsers] = useState([]);
+  const [fetchedCode, setFetchedCode] = useState("");
+  const [language, setLanguage] = useState("javascript");
+  const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+  const [feedbackList, setFeedbackList] = useState([]); 
+
+  const handleFeedbackSubmit = (feedbackText) => {
+    socket.emit("send feedback", { roomId, feedback: feedbackText });
+    setIsFeedbackOpen(false);
+  };
+
   function onChange(newValue) {
     setFetchedCode(newValue);
     socket.emit("update code", { roomId, code: newValue });
@@ -52,6 +59,12 @@ export default function Room({ socket }) {
       setFetchedCode(code);
     });
 
+    
+    socket.on("feedback updated", ({ feedback }) => {
+      console.log("Received feedback:", feedback);
+      setFeedbackList((prevFeedbackList) => [...prevFeedbackList, feedback]);
+    });
+
     socket.on("new member joined", ({ username }) => {
       toast(`${username} joined`);
     });
@@ -72,6 +85,7 @@ export default function Room({ socket }) {
 
     return () => {
       window.removeEventListener("popstate", backButtonEventListner);
+      socket.off("feedback updated");
     };
   }, [socket]);
 
@@ -80,11 +94,7 @@ export default function Room({ socket }) {
       <div className="aside">
         <div className="asideInner">
           <div className="logo">
-            <img
-              className="logoImage"
-              src="/max.png"
-              alt="logo"
-            />
+            <img className="logoImage" src="/max.png" alt="logo" />
           </div>
           <h3>Connected</h3>
           <div className="clientsList">
@@ -100,6 +110,15 @@ export default function Room({ socket }) {
               </div>
             ))}
           </div>
+          <button
+            className="btn feedbackBtn"
+            onClick={() => setIsFeedbackOpen((prev) => !prev)}
+          >
+            {isFeedbackOpen ? "Close Feedback" : "Provide Feedback"}
+          </button>
+
+          {isFeedbackOpen && <Feedback onSubmit={handleFeedbackSubmit} />}
+          <FeedbackDisplay feedbackList={feedbackList} />
         </div>
         <button
           className="btn copyBtn"
@@ -143,11 +162,11 @@ export default function Room({ socket }) {
           }}
         />
       </div>
+
       
+      
+
       <Toaster />
-        
-       
-      </div>
-      
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export default function JoinRoom() {
   function handleRoomSubmit(e) {
     e.preventDefault();
     if (!validate(roomId)) {
-      toast.error("Incorrect room ID");
+      toast.error("Incorrect room ID" , {duration: 10000});
       return;
     }
     username && navigate(`/room/${roomId}`, { state: { username } });
@@ -23,7 +23,7 @@ export default function JoinRoom() {
   function createRoomId(e) {
     try {
       setRoomId(uuidv4());
-      toast.success("Room created");
+      toast.success("Room created" ,  {duration: 10000});
     } catch (exp) {
       console.error(exp);
     }
@@ -41,7 +41,7 @@ export default function JoinRoom() {
         />
 
         <form className="joinBox" onSubmit={handleRoomSubmit}>
-          <h4 className="mainLabel">Paste invitation ROOM ID</h4>
+          <h4 className="mainLabel">Paste invitation ROOM ID here :</h4>
           <div className="inputGroup">
             <input
               className="inputBox"
@@ -63,6 +63,7 @@ export default function JoinRoom() {
             <br></br>
 
             <div className="joinBoxInputWrapper">
+            <h4 className="mainLabel">Enter Your Username :</h4>
               <input
                 className="inputBox"
                 id="usernameInput"
@@ -88,10 +89,10 @@ export default function JoinRoom() {
             <p className="createInfo">
               Don't have an invite code? Create your{" "}
               <span
-                style={{ textDecoration: "underline", cursor: "pointer" }}
+                style={{ textDecoration: "underline", cursor: "pointer" , color:"#4aee88" , fontWeight:"bold" }}
                 onClick={createRoomId}
               >
-                own room
+                Own room
               </span>
             </p>
           </div>

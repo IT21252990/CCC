@@ -65,6 +65,8 @@ io.on('connection', function (socket) {
       io.to(socket.id).emit("on code change", { code: roomID_to_Code_Map[roomId].code })
     }
 
+    
+
     // alerting other users in room that new user joined
     socket.in(roomId).emit("new member joined", {
       username
@@ -96,6 +98,16 @@ io.on('connection', function (socket) {
     }
   })
 
+  
+// Add a new socket event to handle sending feedback
+socket.on("send feedback", ({ roomId, feedback }) => {
+  if (roomId in roomID_to_Code_Map) {
+    roomID_to_Code_Map[roomId]["feedback"] = feedback;
+    io.in(roomId).emit("feedback updated", { feedback });
+  }
+});
+
+
   // for user editing the code to reflect on his/her screen
   socket.on("syncing the code", ({ roomId }) => {
     if (roomId in roomID_to_Code_Map) {
@@ -108,6 +120,7 @@ io.on('connection', function (socket) {
     updateUserslistAndCodeMap(io, socket, roomId)
   })
 
+  
   socket.on("disconnecting", (reason) => {
     socket.rooms.forEach(eachRoom => {
       if (eachRoom in roomID_to_Code_Map) {
@@ -121,6 +134,7 @@ io.on('connection', function (socket) {
     console.log('A user disconnected')
   })
 })
+
 
 //you can store your port number in a dotenv file, fetch it from there and store it in PORT
 //we have hard coded the port number here just for convenience
