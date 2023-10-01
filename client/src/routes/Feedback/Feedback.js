@@ -1,5 +1,6 @@
 // Create a new component Feedback.js
 import React, { useState } from "react";
+import "./Feedback.css";
 
 export default function Feedback({ onSubmit }) {
   const [feedbackText, setFeedbackText] = useState("");
@@ -20,7 +21,7 @@ export default function Feedback({ onSubmit }) {
         onChange={(e) => setFeedbackText(e.target.value)}
         placeholder="Enter your feedback here"
       />
-      <button onClick={handleSubmit}>Send Feedback</button>
+      <button onClick={handleSubmit}>Send</button>
     </div>
   );
 }

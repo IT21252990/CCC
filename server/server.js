@@ -101,11 +101,16 @@ io.on('connection', function (socket) {
   
 // Add a new socket event to handle sending feedback
 socket.on("send feedback", ({ roomId, feedback }) => {
-  if (roomId in roomID_to_Code_Map) {
-    roomID_to_Code_Map[roomId]["feedback"] = feedback;
-    io.in(roomId).emit("feedback updated", { feedback });
-  }
-});
+    if (roomId in roomID_to_Code_Map) {
+      // Assuming feedback is an object with "text" and "username" properties
+      const feedbackWithUsername = {
+        text: feedback.text,
+        username: socketID_to_Users_Map[socket.id].username
+      };
+      roomID_to_Code_Map[roomId]["feedback"] = feedbackWithUsername;
+      io.in(roomId).emit("feedback updated", { feedback: feedbackWithUsername });
+    }
+  });
 
 
   // for user editing the code to reflect on his/her screen

@@ -1,0 +1,114 @@
+/* Feedback Modal */
+.feedbackModal {
+  display: none;
+  position: fixed;
+  z-index: 1;
+  bottom: 10px;
+  right: 10px;
+  cursor: pointer;
+}
+
+.feedbackModal.open {
+  display: block;
+}
+
+.modalContent {
+  background-color: #fff;
+  margin: 5% auto;
+  padding: 10px;
+  border: 1px solid #ccc;
+  width: 280px; /* Fixed width */
+  max-height: 280px; /* Maximum height */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.close {
+  color: #aaaaaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: #000;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Feedback Display */
+.feedbackDisplayContainer {
+  margin-top: 10px;
+}
+
+.feedbackItem {
+  background-color: #f0f0f0;
+  padding: 10px; /* Adjust padding */
+  border-radius: 15px;
+  margin-bottom: 10px; /* Adjust margin */
+  border: 1px solid #ccc;
+}
+
+.feedbackHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.username {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.feedbackText {
+  color: #333;
+}
+
+/* Optional: Alternating colors for feedback items */
+.feedbackItem:nth-child(odd) {
+  background-color: #f9b4ab;
+}
+
+.feedbackItem:nth-child(even) {
+  background-color: #abf9d8;
+}
+
+/* Feedback Form */
+.feedbackContainer {
+  padding: 10px;
+  border: 1px solid #424242;
+  border-radius: 5px;
+  width: 95%;
+}
+
+.feedbackContainer h2 {
+  margin-bottom: 1px;
+}
+
+.feedbackContainer textarea {
+  width: calc(100% - 20px);
+  padding: 10px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  resize: vertical;
+}
+
+.feedbackContainer button {
+  width: 40%;
+  padding: 5px;
+  font-size: 14px;
+  cursor: pointer;
+  border: none;
+  border-radius: 5px;
+  background-color: #4aed88;
+  color: black;
+  margin-top: 10px;
+  font-weight: bold;
+}
+
+.feedbackContainer button:hover {
+  background-color: #368654;
+}

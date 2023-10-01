@@ -4,8 +4,8 @@ import { Toaster, toast } from "react-hot-toast";
 import { useNavigate, useParams } from "react-router-dom";
 import { generateColor } from "../../utils";
 import "./Room.css";
-import Feedback from "../../components/Feedback";
-import FeedbackDisplay from "../../components/FeedbackDisplay"; 
+import Feedback from "../Feedback/Feedback";
+import FeedbackModal from "../Feedback/FeedbackModal";
 
 import "ace-builds/src-noconflict/mode-javascript";
 import "ace-builds/src-noconflict/theme-dracula";
@@ -20,11 +20,25 @@ export default function Room({ socket }) {
   const [language, setLanguage] = useState("javascript");
   const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
   const [feedbackList, setFeedbackList] = useState([]); 
+  const [showModal, setShowModal] = useState(false);
 
   const handleFeedbackSubmit = (feedbackText) => {
-    socket.emit("send feedback", { roomId, feedback: feedbackText });
+    const username = socket.id;  // Assuming socket.id is the username
+    const feedback = { text: feedbackText, username };  // Feedback object
+    socket.emit("send feedback", { roomId, feedback });
     setIsFeedbackOpen(false);
   };
+
+  const handleFeedbackButtonClick = () => {
+    setIsFeedbackOpen((prev) => !prev);
+    setShowModal((prevShowModal) => !prevShowModal);
+
+    // If the modal is currently open, close it
+    if (showModal) {
+      setIsFeedbackOpen(false);
+    }
+  };
+
 
   function onChange(newValue) {
     setFetchedCode(newValue);
@@ -63,6 +77,9 @@ export default function Room({ socket }) {
     socket.on("feedback updated", ({ feedback }) => {
       console.log("Received feedback:", feedback);
       setFeedbackList((prevFeedbackList) => [...prevFeedbackList, feedback]);
+
+      toast(`New Feedback from ${feedback.username}`);
+
     });
 
     socket.on("new member joined", ({ username }) => {
@@ -110,15 +127,15 @@ export default function Room({ socket }) {
               </div>
             ))}
           </div>
-          <button
-            className="btn feedbackBtn"
-            onClick={() => setIsFeedbackOpen((prev) => !prev)}
-          >
-            {isFeedbackOpen ? "Close Feedback" : "Provide Feedback"}
-          </button>
+          
 
           {isFeedbackOpen && <Feedback onSubmit={handleFeedbackSubmit} />}
-          <FeedbackDisplay feedbackList={feedbackList} />
+          <button className="btn_feedbackBtn" onClick={handleFeedbackButtonClick}>
+            Feedback
+          </button>
+      
+
+
         </div>
         <button
           className="btn copyBtn"
@@ -163,7 +180,12 @@ export default function Room({ socket }) {
         />
       </div>
 
-      
+      {/* Modal for feedback display */}
+      <FeedbackModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        feedbackList={feedbackList}
+      />
       
 
       <Toaster />
