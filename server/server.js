@@ -3,14 +3,54 @@ const http = require('http')
 const { Server } = require('socket.io')
 const cors = require("cors")
 const mongoose = require('mongoose');
+const helmet = require('helmet'); // Import helmet for security headers
 require('dotenv').config()
 const authRouts = require('./routes/authRouts')
 const codeRouts = require('./routes/codeRoutes')
+
+const session = require('express-session');
+const passport = require('passport');
+require('./passport'); // Import passport configuration
+
+// Disable the 'X-Powered-By' header (Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s))
+app.disable('x-powered-by');
+
 const app = express();
 
+// Disable the 'X-Powered-By' header (Server Leaks Information via "X-Powered-By" HTTP Response Header Field(s))
+app.disable('x-powered-by');
+
+// Set up security headers with Helmet
+app.use(helmet());
+
+// Configure CSP
+app.use(helmet.contentSecurityPolicy({
+    directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'"], 
+        styleSrc: ["'self'"],
+        imgSrc: ["'self'"],
+        connectSrc: ["'self'", "http://localhost:5000"], 
+    },
+}));
+
+// Set X-Frame-Options header to deny iframe embedding
+app.use(helmet.frameguard({ action: 'deny' }));
+
+// Log the CSP header for debugging
+app.use((req, res, next) => {
+    console.log('CSP Header:', res.getHeaders()['content-security-policy']);
+    next();
+});
 app.use(cors())
 
 app.use(express.json());
+
+// Setting security headers (X-Content-Type-Options Header Missing)
+app.use((req, res, next) => {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  next();
+});
 
 app.use('/auth', authRouts);
 app.use('/code', codeRouts);
@@ -20,9 +60,6 @@ app.use(express.static('build'));
 app.use((req, res, next) => {
     res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
-
-
-
 
 
 //database 
